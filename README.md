@@ -9,4 +9,4 @@ Tarayıcıda çalışan yaş hesaplama uygulaması. GitHub Pages ile ücretsiz y
 3. Branch olarak `main`, klasör olarak `/ (root)` seçip **Save**'e basın.
 4. Yayın tamamlanınca sayfada gösterilen URL'yi açın. Genellikle `https://gokcblkc-oss.github.io/halloween-ruhlar-dairesi/` biçimindedir.
 
-Yayın birkaç dakika sürebilir. Uygulamayı yerelde denemek için `index.html` dosyasını bir tarayıcıda açın.
+Yayın birkaç dakika sürebilir. Uygulamayı yerelde denemek için `index.html` dosyasını bir tarayıcıda açın. Ruh raporu oluşturulurken bir hayalet parşömeni taşıyarak ekrana getirir.
