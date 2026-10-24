@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100817">
+  <meta name="description" content="Ruhlar Dairesi'nde yaşını öğren ve ruh envanterini oluştur.">
+  <title>Halloween • Ruhlar Dairesi</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --black: #100817;
+      --purple-dark: #21102f;
+      --purple: #592878;
+      --purple-light: #a56bce;
+      --orange: #ff7900;
+      --orange-light: #ffab40;
+      --white: #fff9ff;
+      --yellow: #ffe66d;
+      --parchment: #fff3d6;
+      --parchment-edge: #d99032;
+      --parchment-text: #35203c;
+      font-family: Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--white);
+      background:
+        radial-gradient(ellipse at 50% 45%, #301346 0, var(--black) 68%);
+    }
+
+    #stars { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+    .star {
+      position: absolute;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      background: var(--color);
+      opacity: .8;
+      animation: twinkle 2.5s ease-in-out infinite alternate;
+      animation-delay: var(--delay);
+    }
+
+    @keyframes twinkle { to { opacity: .2; transform: scale(.65); } }
+
+    .scene {
+      position: relative;
+      display: grid;
+      min-height: 100vh;
+      place-items: center;
+      padding: 36px 18px 80px;
+      isolation: isolate;
+    }
+
+    .hat {
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-right: 35px solid transparent;
+      border-bottom: 66px solid var(--black);
+      border-left: 35px solid transparent;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 0 2px var(--purple-light));
+    }
+
+    .hat::after {
+      position: absolute;
+      top: 57px;
+      left: -52px;
+      width: 104px;
+      height: 15px;
+      border: 2px solid var(--orange);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .pumpkin {
+      position: fixed;
+      z-index: -1;
+      bottom: 8px;
+      font-size: clamp(66px, 10vw, 120px);
+      filter: drop-shadow(0 0 18px #ff790055);
+      animation: bob 3s ease-in-out infinite;
+    }
+    .pumpkin.left { left: 16px; }
+    .pumpkin.right { right: 16px; animation-delay: -1.4s; }
+    @keyframes bob { 50% { transform: translateY(-9px) rotate(3deg); } }
+
+    .ghost {
+      position: fixed;
+      z-index: 0;
+      top: 23%;
+      left: -80px;
+      font-size: 48px;
+      pointer-events: none;
+      animation: fly 18s linear infinite;
+      filter: drop-shadow(0 0 10px #fff8);
+    }
+    @keyframes fly {
+      0% { transform: translate(-90px, 10px); }
+      50% { transform: translate(calc(100vw + 100px), -18px); }
+      100% { transform: translate(-90px, 10px); }
+    }
+
+    .card {
+      z-index: 1;
+      width: min(490px, 100%);
+      padding: 26px 32px 32px;
+      border: 2px solid var(--orange);
+      border-radius: 12px;
+      background: rgb(33 16 47 / 96%);
+      box-shadow: 0 18px 70px #0008, 0 0 26px #a56bce20;
+      text-align: center;
+      transition: opacity .35s, transform .35s;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: var(--orange);
+      font: bold 34px Georgia, serif;
+      letter-spacing: 2px;
+    }
+    .subtitle { margin: 0 0 10px; font: italic 19px Georgia, serif; }
+    .intro { margin: 0 0 22px; color: var(--purple-light); line-height: 1.5; }
+    label { display: block; margin: 14px 0 7px; font-weight: bold; }
+
+    input, select {
+      min-height: 44px;
+      border: 1px solid #c59ade;
+      border-radius: 6px;
+      background: #f4e9ff;
+      color: var(--black);
+      font: 16px Arial, sans-serif;
+    }
+    input { width: 100%; padding: 9px 12px; text-align: center; }
+
+    .date-fields { display: flex; justify-content: center; gap: 9px; }
+    .date-fields select { padding: 8px; text-align: center; }
+    #day, #month { width: 90px; }
+    #year { width: 112px; }
+
+    button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 6px;
+      padding: 12px 18px;
+      font: bold 14px Arial, sans-serif;
+      cursor: pointer;
+      transition: filter .2s, transform .2s;
+    }
+    button:hover { filter: brightness(1.12); transform: translateY(-1px); }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+    .submit { margin-top: 25px; background: var(--orange); color: var(--black); }
+    .again { display: block; margin: 20px auto 0; background: var(--purple); color: var(--white); }
+
+    .error {
+      min-height: 1.3em;
+      margin: 10px 0 0;
+      color: #ffb4a9;
+      font-size: 14px;
+    }
+
+    .report-wrap { z-index: 1; width: min(650px, 100%); }
+    .report {
+      position: relative;
+      display: none;
+      padding: clamp(24px, 5vw, 46px);
+      border: 4px solid var(--parchment-edge);
+      outline: 1px solid #c99a53;
+      outline-offset: -13px;
+      background: var(--parchment);
+      box-shadow: 8px 12px 34px #0009;
+      color: var(--parchment-text);
+      text-align: center;
+    }
+    .report.show { display: block; animation: unroll .7s ease-out both; }
+    @keyframes unroll {
+      from { opacity: 0; transform: scaleY(.08) translateY(25px); }
+      to { opacity: 1; transform: scaleY(1) translateY(0); }
+    }
+    .report h2 { margin: 0; color: #57224d; font: bold clamp(18px, 4vw, 25px) Georgia, serif; }
+    .department { margin: 9px 0 20px; color: #95612d; font: italic 13px Georgia, serif; }
+    .rule { height: 1px; margin: 18px 0; background: #d4a15d; }
+    .caption { margin: 0 0 10px; color: #95612d; font-size: 12px; font-weight: bold; letter-spacing: 1px; }
+    .owner { margin: 0; overflow-wrap: anywhere; font: bold 20px Georgia, serif; }
+    .age { margin: 20px 0; color: #57224d; font: bold clamp(20px, 5vw, 28px) Georgia, serif; }
+    .closing { margin: 8px 0; color: #9a3d16; font-weight: bold; }
+    .fine-print { margin: 12px 0 0; color: #95612d; font-size: 11px; }
+    .report-wrap .again { display: none; }
+    .report-wrap .again.show { display: block; }
+
+    @media (max-width: 520px) {
+      .scene { padding: 82px 14px 95px; }
+      .card { padding: 24px 20px 27px; }
+      h1 { font-size: 30px; }
+      .pumpkin.left { left: -3px; }
+      .pumpkin.right { right: -3px; }
+      .hat { top: 17px; }
+      .report { padding: 34px 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="stars" aria-hidden="true"></div>
+  <div class="hat" aria-hidden="true"></div>
+  <div class="ghost" aria-hidden="true">👻</div>
+  <div class="pumpkin left" aria-hidden="true">🎃</div>
+  <div class="pumpkin right" aria-hidden="true">🎃</div>
+
+  <main class="scene">
+    <section class="card" id="card" aria-labelledby="title">
+      <h1 id="title">HALLOWEEN</h1>
+      <p class="subtitle">Ruhunun yaşı kaç?</p>
+      <p class="intro">Ruhlar Dairesine hoş geldin.<br>Kimlik bilgilerini eksiksiz doldur.</p>
+
+      <form id="age-form" novalidate>
+        <label for="name">Ruhunun adı ne?</label>
+        <input id="name" name="name" type="text" maxlength="80" autocomplete="name" required>
+
+        <label> Dünyaya geliş tarihin:</label>
+        <div class="date-fields">
+          <select id="day" aria-label="Gün" required><option value="">Gün</option></select>
+          <select id="month" aria-label="Ay" required><option value="">Ay</option></select>
+          <select id="year" aria-label="Yıl" required><option value="">Yıl</option></select>
+        </div>
+        <p class="error" id="error" role="alert" aria-live="polite"></p>
+        <button class="submit" type="submit">RUHUNUN YAŞINI ÖĞREN</button>
+      </form>
+    </section>
+
+    <section class="report-wrap" aria-live="polite">
+      <article class="report" id="report" aria-labelledby="report-title">
+        <h2 id="report-title">R U H &nbsp; E N V A N T E R İ</h2>
+        <p class="department">Ruhlar Dairesi • Ölümlü İşler Müdürlüğü</p>
+        <div class="rule"></div>
+        <p class="caption">DOSYA SAHİBİ</p>
+        <p class="owner" id="owner"></p>
+        <div class="rule"></div>
+        <p class="caption">DÜNYADA GEÇEN SÜRE</p>
+        <p class="age" id="age"></p>
+        <div class="rule"></div>
+        <p><em>Zaman akıp gidiyor...</em></p>
+        <p class="closing">ÖLÜM BELGENİZ HENÜZ DÜZENLENMEDİ.</p>
+        <p>Lütfen yaşamaya devam ediniz. 👻</p>
+        <p class="fine-print">Bu belge Ruhlar Dairesi tarafından hazırlanmıştır.</p>
+      </article>
+      <button class="again" id="again" type="button">YENİ BİR RUH SORGULA</button>
+    </section>
+  </main>
+
+  <script>
+    const form = document.querySelector("#age-form");
+    const card = document.querySelector("#card");
+    const report = document.querySelector("#report");
+    const again = document.querySelector("#again");
+    const nameInput = document.querySelector("#name");
+    const daySelect = document.querySelector("#day");
+    const monthSelect = document.querySelector("#month");
+    const yearSelect = document.querySelector("#year");
+    const error = document.querySelector("#error");
+    const today = new Date();
+    const currentYear = today.getFullYear();
+
+    for (let day = 1; day <= 31; day++) {
+      daySelect.add(new Option(String(day), String(day)));
+    }
+    for (let month = 1; month <= 12; month++) {
+      monthSelect.add(new Option(String(month), String(month)));
+    }
+    for (let year = currentYear; year >= 1920; year--) {
+      yearSelect.add(new Option(String(year), String(year)));
+    }
+
+    const stars = document.querySelector("#stars");
+    const colors = ["#fff9ff", "#a56bce", "#ff7900"];
+    for (let i = 0; i < 120; i++) {
+      const star = document.createElement("span");
+      const size = 1 + Math.floor(Math.random() * 3);
+      star.className = "star";
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.setProperty("--size", `${size}px`);
+      star.style.setProperty("--color", colors[Math.floor(Math.random() * colors.length)]);
+      star.style.setProperty("--delay", `${Math.random() * -3}s`);
+      stars.append(star);
+    }
+
+    function daysInMonth(year, month) {
+      return new Date(year, month, 0).getDate();
+    }
+
+    function calculateAge(birthYear, birthMonth, birthDay) {
+      let years = today.getFullYear() - birthYear;
+      let months = today.getMonth() + 1 - birthMonth;
+      let days = today.getDate() - birthDay;
+
+      if (days < 0) {
+        const previousMonth = today.getMonth() === 0 ? 12 : today.getMonth();
+        const previousMonthYear = today.getMonth() === 0 ? today.getFullYear() - 1 : today.getFullYear();
+        days += daysInMonth(previousMonthYear, previousMonth);
+        months--;
+      }
+      if (months < 0) {
+        months += 12;
+        years--;
+      }
+      return `${years} yıl, ${months} ay, ${days} gün`;
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      error.textContent = "";
+
+      const name = nameInput.value.trim();
+      const day = Number(daySelect.value);
+      const month = Number(monthSelect.value);
+      const year = Number(yearSelect.value);
+
+      if (!name) {
+        error.textContent = "İsmini yazmadan ruh envanteri oluşturamayız! 👻";
+        nameInput.focus();
+        return;
+      }
+      if (!day || !month || !year) {
+        error.textContent = "Geçerli bir doğum tarihi seçmelisin! 🎃";
+        return;
+      }
+
+      const birth = new Date(year, month - 1, day);
+      if (birth.getFullYear() !== year || birth.getMonth() !== month - 1 || birth.getDate() !== day) {
+        error.textContent = "Seçtiğin tarih takvimde bulunmuyor. Lütfen kontrol et! 🎃";
+        return;
+      }
+      if (birth > today) {
+        error.textContent = "Gelecekten mi geldin? Doğum tarihin bugünden ileri olamaz! 😂";
+        return;
+      }
+
+      document.querySelector("#owner").textContent = `Ruh sahibi: ${name}`;
+      document.querySelector("#age").textContent = calculateAge(year, month, day);
+      card.hidden = true;
+      report.classList.add("show");
+      again.classList.add("show");
+    });
+
+    again.addEventListener("click", () => {
+      form.reset();
+      error.textContent = "";
+      report.classList.remove("show");
+      again.classList.remove("show");
+      card.hidden = false;
+      nameInput.focus();
+    });
+  </script>
+</body>
+</html>
