@@ -103,6 +103,44 @@
       animation: fly 18s linear infinite;
       filter: drop-shadow(0 0 10px #fff8);
     }
+    .delivery {
+      position: fixed;
+      z-index: 4;
+      top: 50%;
+      left: 0;
+      display: none;
+      width: 100%;
+      height: 120px;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .delivery.show { display: block; }
+    .courier {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: courier-flight 1.8s ease-in-out both;
+      filter: drop-shadow(0 0 10px #fff8);
+    }
+    .delivery-ghost { font-size: 72px; }
+    .letter {
+      display: grid;
+      width: 42px;
+      height: 56px;
+      place-items: center;
+      border: 3px solid var(--parchment-edge);
+      border-radius: 3px;
+      background: var(--parchment);
+      color: var(--parchment-text);
+      font: 25px Georgia, serif;
+    }
+    @keyframes courier-flight {
+      from { transform: translateX(-180px); }
+      to { transform: translateX(calc(100vw + 180px)); }
+    }
     @keyframes fly {
       0% { transform: translate(-90px, 10px); }
       50% { transform: translate(calc(100vw + 100px), -18px); }
@@ -218,6 +256,9 @@
   <div id="stars" aria-hidden="true"></div>
   <div class="hat" aria-hidden="true"></div>
   <div class="ghost" aria-hidden="true">👻</div>
+<div class="delivery" id="delivery" aria-hidden="true">
+  <div class="courier"><span class="delivery-ghost">👻</span><span class="letter">✉</span></div>
+</div>
   <div class="pumpkin left" aria-hidden="true">🎃</div>
   <div class="pumpkin right" aria-hidden="true">🎃</div>
 
@@ -267,6 +308,7 @@
     const card = document.querySelector("#card");
     const report = document.querySelector("#report");
     const again = document.querySelector("#again");
+    const delivery = document.querySelector("#delivery");
     const nameInput = document.querySelector("#name");
     const daySelect = document.querySelector("#day");
     const monthSelect = document.querySelector("#month");
@@ -353,13 +395,20 @@
       document.querySelector("#owner").textContent = `Ruh sahibi: ${name}`;
       document.querySelector("#age").textContent = calculateAge(year, month, day);
       card.hidden = true;
-      report.classList.add("show");
-      again.classList.add("show");
+      delivery.classList.add("show");
+
+      const courier = delivery.querySelector(".courier");
+      courier.addEventListener("animationend", () => {
+        delivery.classList.remove("show");
+        report.classList.add("show");
+        again.classList.add("show");
+      }, { once: true });
     });
 
     again.addEventListener("click", () => {
       form.reset();
       error.textContent = "";
+      delivery.classList.remove("show");
       report.classList.remove("show");
       again.classList.remove("show");
       card.hidden = false;
